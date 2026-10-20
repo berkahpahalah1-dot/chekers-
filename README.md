@@ -1,14 +1,25 @@
-# Gmail Checker Massal — 4 indikator
-Antarmuka checker massal dengan indikator Format, Professional, Domain status, dan Mailbox.
-- Format: pemeriksaan sintaks alamat `@gmail.com`.
-- Professional: kategori umum sederhana, bukan hasil verifikasi akun.
-- Domain status: pemeriksaan DNS MX via DNS-over-HTTPS Cloudflare.
-- Mailbox: Unknown; Google tidak menyediakan API publik untuk memastikan pendaftaran mailbox Gmail massal.
+# Gmail Checker Massal — Full Project
 
-## Deploy gratis ke Vercel
-1. Ekstrak ZIP.
-2. Buat repository GitHub dan unggah folder `public` ke root repository (isi foldernya: `index.html`, `style.css`, `app.js`).
-3. Impor repository ke Vercel sebagai proyek static, Framework Preset `Other`, tanpa build command dan output directory `.`.
-4. Deploy. Tidak perlu API key atau OAuth.
+## Struktur yang benar
+```text
+public/
+  index.html
+  style.css
+  app.js
+README.md
+```
 
-DNS query bergantung pada akses jaringan browser. Jika diblokir, status domain tampil Unknown. Status mailbox tidak membuktikan akun terdaftar, menerima email, atau sedang login.
+## Deploy ke Vercel
+1. Ekstrak ZIP ini.
+2. Di repository GitHub, pastikan tiga file (`index.html`, `style.css`, `app.js`) berada bersama-sama di dalam folder `public`.
+3. Buka Vercel dan impor repository GitHub.
+4. Settings → Build and Deployment:
+   - Framework Preset: `Other`
+   - Build Command: kosong
+   - Output Directory: `public`
+5. Save, lalu Deploy atau Redeploy.
+
+Jika kamu mengunggah isi folder `public` langsung ke root repository (sehingga `index.html` ada di root), atur Output Directory menjadi `.`.
+
+## Batasan
+Website ini memeriksa format Gmail, menghitung hingga 50 alamat, dan memeriksa DNS MX domain Gmail. Indikator Mailbox selalu `Unknown` karena tidak ada API publik Google untuk memeriksa massal apakah alamat Gmail sembarang sudah terdaftar. Ini juga tidak memeriksa status login perangkat.
