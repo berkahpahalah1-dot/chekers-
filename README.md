@@ -1,29 +1,14 @@
-# Gmail Checker Massal
+# Gmail Checker Massal — 4 indikator
+Antarmuka checker massal dengan indikator Format, Professional, Domain status, dan Mailbox.
+- Format: pemeriksaan sintaks alamat `@gmail.com`.
+- Professional: kategori umum sederhana, bukan hasil verifikasi akun.
+- Domain status: pemeriksaan DNS MX via DNS-over-HTTPS Cloudflare.
+- Mailbox: Unknown; Google tidak menyediakan API publik untuk memastikan pendaftaran mailbox Gmail massal.
 
-Website statis sederhana untuk memeriksa format alamat `@gmail.com` dan menemukan duplikat. Daftar email diproses di browser, tidak dikirim ke server aplikasi.
+## Deploy gratis ke Vercel
+1. Ekstrak ZIP.
+2. Buat repository GitHub dan unggah folder `public` ke root repository (isi foldernya: `index.html`, `style.css`, `app.js`).
+3. Impor repository ke Vercel sebagai proyek static, Framework Preset `Other`, tanpa build command dan output directory `.`.
+4. Deploy. Tidak perlu API key atau OAuth.
 
-## Yang dilakukan
-- Menerima banyak email, dipisahkan baris baru, koma, titik koma, atau spasi.
-- Memeriksa format dasar alamat Gmail.
-- Menandai alamat duplikat.
-- Menyalin semua email berformat valid atau menyalin hasil pemeriksaan.
-
-## Yang tidak dilakukan
-Google tidak menyediakan API publik untuk memastikan apakah alamat Gmail sembarang sudah terdaftar. Aplikasi ini tidak dan tidak bisa menyimpulkan status "terpakai/belum terpakai" dari format email.
-
-## Deploy ke Vercel dari GitHub
-1. Ekstrak ZIP ini.
-2. Buat repository baru di GitHub.
-3. Unggah semua isi folder proyek (folder `public`, `package.json`, `server.js`, `vercel.json`, `.gitignore`, dan `README.md`) ke repository.
-4. Di Vercel, pilih **Add New → Project**, lalu impor repository GitHub tersebut.
-5. Tekan **Deploy**. Untuk proyek sederhana ini, tidak ada API key atau kata sandi yang diperlukan.
-
-Jika konfigurasi build Vercel yang digunakan akunmu tidak menerima `vercel.json` ini, hapus `vercel.json` dan impor sebagai proyek static dengan output directory `public`.
-
-## Menjalankan lokal (opsional)
-Memerlukan Node.js:
-```bash
-npm install
-npm start
-```
-Lalu buka `http://localhost:3000`.
+DNS query bergantung pada akses jaringan browser. Jika diblokir, status domain tampil Unknown. Status mailbox tidak membuktikan akun terdaftar, menerima email, atau sedang login.
