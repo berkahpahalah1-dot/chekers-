@@ -1,25 +1,33 @@
-# Gmail Checker Massal — Full Project
+# Email Verifier
 
-## Struktur yang benar
-```text
-public/
-  index.html
-  style.css
-  app.js
-README.md
-```
+Web app sederhana untuk memverifikasi 1-100 email sekaligus, menggunakan [Abstract API Email Validation](https://www.abstractapi.com/api/email-verification-validation-api).
 
-## Deploy ke Vercel
-1. Ekstrak ZIP ini.
-2. Di repository GitHub, pastikan tiga file (`index.html`, `style.css`, `app.js`) berada bersama-sama di dalam folder `public`.
-3. Buka Vercel dan impor repository GitHub.
-4. Settings → Build and Deployment:
-   - Framework Preset: `Other`
-   - Build Command: kosong
-   - Output Directory: `public`
-5. Save, lalu Deploy atau Redeploy.
+## Menjalankan di lokal
 
-Jika kamu mengunggah isi folder `public` langsung ke root repository (sehingga `index.html` ada di root), atur Output Directory menjadi `.`.
+1. Install dependency:
+   ```
+   npm install
+   ```
+2. Salin `.env.example` menjadi `.env.local`, lalu isi dengan API key Abstract API kamu:
+   ```
+   ABSTRACT_API_KEY=xxxxxxxxxxxxxxxxxxxx
+   ```
+3. Jalankan:
+   ```
+   npm run dev
+   ```
+4. Buka `http://localhost:3000`.
 
-## Batasan
-Website ini memeriksa format Gmail, menghitung hingga 50 alamat, dan memeriksa DNS MX domain Gmail. Indikator Mailbox selalu `Unknown` karena tidak ada API publik Google untuk memeriksa massal apakah alamat Gmail sembarang sudah terdaftar. Ini juga tidak memeriksa status login perangkat.
+## Deploy ke GitHub + Vercel
+
+1. Push project ini ke repository GitHub baru (jangan commit `.env.local` — sudah masuk `.gitignore`).
+2. Buka [vercel.com](https://vercel.com), klik **Add New Project**, lalu import repository GitHub tadi.
+3. Di langkah konfigurasi, buka **Environment Variables**, tambahkan:
+   - Key: `ABSTRACT_API_KEY`
+   - Value: API key dari Abstract API
+4. Klik **Deploy**. Setelah selesai, web kamu sudah live di domain `*.vercel.app`.
+
+## Catatan
+
+- Free tier Abstract API: 100 permintaan/bulan. Kalau kebutuhan verifikasi lebih besar, upgrade paket atau ganti provider lain (Emailable, MailboxValidator, dll) — tinggal ganti bagian `verifyOne()` di `pages/api/verify.js`.
+- API key hanya dipakai di sisi server (`pages/api/verify.js`), tidak pernah dikirim ke browser, jadi aman.
