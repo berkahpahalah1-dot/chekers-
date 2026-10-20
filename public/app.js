@@ -1,111 +1,12 @@
-const input = document.getElementById("emails");
-const checkBtn = document.getElementById("checkBtn");
-const clearBtn = document.getElementById("clearBtn");
-const resultsSection = document.getElementById("resultsSection");
-const resultsBody = document.getElementById("resultsBody");
-const feedback = document.getElementById("feedback");
-let lastRows = [];
-
-function splitEmails(raw) {
-  return raw.split(/[\s,;]+/).map(v => v.trim()).filter(Boolean);
-}
-
-function isGmailFormat(email) {
-  if (email.length > 254 || /\s/.test(email)) return false;
-  const parts = email.split("@");
-  if (parts.length !== 2) return false;
-  const [local, domain] = parts;
-  if (!local || local.length > 64 || domain.toLowerCase() !== "gmail.com") return false;
-  if (local.startsWith(".") || local.endsWith(".") || local.includes("..")) return false;
-  return /^[a-zA-Z0-9.]+$/.test(local);
-}
-
-function escapeHtml(value) {
-  return value.replace(/[&<>"']/g, ch => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-  }[ch]));
-}
-
-function runCheck() {
-  const emails = splitEmails(input.value);
-  if (!emails.length) {
-    input.focus();
-    feedback.textContent = "Masukkan setidaknya satu alamat email terlebih dahulu.";
-    resultsSection.classList.remove("hidden");
-    resultsBody.innerHTML = "";
-    return;
-  }
-
-  const seen = new Set();
-  lastRows = emails.map(email => {
-    const normalized = email.toLowerCase();
-    const valid = isGmailFormat(email);
-    const duplicate = seen.has(normalized);
-    seen.add(normalized);
-    let status, css;
-    if (!valid) {
-      status = "Format tidak valid";
-      css = "status-invalid";
-    } else if (duplicate) {
-      status = "Duplikat";
-      css = "status-duplicate";
-    } else {
-      status = "Format valid · akun tidak diketahui";
-      css = "status-valid";
-    }
-    return { email, valid, duplicate, status, css };
-  });
-
-  const validCount = lastRows.filter(r => r.valid && !r.duplicate).length;
-  const invalidCount = lastRows.filter(r => !r.valid).length;
-  const duplicateCount = lastRows.filter(r => r.valid && r.duplicate).length;
-
-  document.getElementById("totalBadge").textContent = `${emails.length} email`;
-  document.getElementById("validCount").textContent = validCount;
-  document.getElementById("invalidCount").textContent = invalidCount;
-  document.getElementById("duplicateCount").textContent = duplicateCount;
-  resultsBody.innerHTML = lastRows.map(row =>
-    `<tr><td>${escapeHtml(row.email)}</td><td><span class="status ${row.css}">${escapeHtml(row.status)}</span></td></tr>`
-  ).join("");
-  resultsSection.classList.remove("hidden");
-  feedback.textContent = "Selesai. Status akun terdaftar tidak dapat dipastikan dari pemeriksaan ini.";
-}
-
-async function copyText(text) {
-  if (!text) {
-    feedback.textContent = "Tidak ada email untuk disalin.";
-    return;
-  }
-  try {
-    await navigator.clipboard.writeText(text);
-    feedback.textContent = "Berhasil disalin.";
-  } catch {
-    const helper = document.createElement("textarea");
-    helper.value = text;
-    helper.style.position = "fixed";
-    helper.style.opacity = "0";
-    document.body.appendChild(helper);
-    helper.select();
-    const ok = document.execCommand("copy");
-    helper.remove();
-    feedback.textContent = ok ? "Berhasil disalin." : "Gagal menyalin. Silakan salin secara manual.";
-  }
-}
-
-checkBtn.addEventListener("click", runCheck);
-clearBtn.addEventListener("click", () => {
-  input.value = "";
-  resultsSection.classList.add("hidden");
-  resultsBody.innerHTML = "";
-  feedback.textContent = "";
-  lastRows = [];
-  input.focus();
-});
-document.getElementById("copyValidBtn").addEventListener("click", () => {
-  const emails = [...new Set(lastRows.filter(r => r.valid).map(r => r.email.toLowerCase()))];
-  return copyText(emails.join("\n"));
-});
-document.getElementById("copyResultsBtn").addEventListener("click", () => {
-  return copyText(lastRows.map(r => `${r.email} = ${r.status}`).join("\n"));
-});
-    
+const input=document.querySelector('#emailInput'),inputCount=document.querySelector('#inputCount'),summary=document.querySelector('#summary'),results=document.querySelector('#results'),feedback=document.querySelector('#feedback');let rows=[];
+function parseEmails(s){return s.split(/[\s,;]+/).map(x=>x.trim()).filter(Boolean)}
+function formatValid(email){const p=email.split('@');if(p.length!==2||p[1].toLowerCase()!=='gmail.com')return false;const local=p[0];return local.length>0&&local.length<=64&&!local.startsWith('.')&&!local.endsWith('.')&&!local.includes('..')&&/^[a-zA-Z0-9.]+$/.test(local)&&email.length<=254}
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+input.addEventListener('input',()=>inputCount.textContent=parseEmails(input.value).length+' email');
+async function checkDomain(domain){try{const r=await fetch('https://cloudflare-dns.com/dns-query?name='+encodeURIComponent(domain)+'&type=MX',{headers:{accept:'application/dns-json'}});if(!r.ok)throw Error();const d=await r.json();return d.Status===0&&Array.isArray(d.Answer)&&d.Answer.length?{status:'Valid',detail:'MX record ditemukan'}:{status:'Unknown',detail:'Tidak dapat memastikan MX'}}catch{return {status:'Unknown',detail:'Pemeriksaan DNS tidak tersedia'}}}
+function card(r){return `<article class="result"><div class="headline"><div class="email">${esc(r.email)}</div><span class="overall ${r.format?'ok':'bad'}">${r.format?'Format valid':'Format invalid'}</span></div><div class="checks"><div class="check"><span>Format</span><b class="${r.format?'good':'badtext'}">${r.format?'Valid':'Invalid'}</b></div><div class="check"><span>Professional</span><b class="unknown">${r.format?'Domain publik / kategori umum':'Tidak diperiksa'}</b></div><div class="check"><span>Domain status</span><b class="${r.domain==='Valid'?'good':'unknown'}">${esc(r.domain)}</b></div><div class="check"><span>Mailbox</span><b class="unknown">Unknown</b></div></div><p class="hint">${r.format?'Format benar tidak membuktikan akun Gmail terdaftar.':'Alamat tidak lolos pemeriksaan format dasar.'} ${esc(r.domainDetail||'')}</p></article>`}
+function render(){const f=document.querySelector('#filter').value;results.innerHTML=rows.filter(r=>f==='all'||(f==='valid'&&r.format)||(f==='invalid'&&!r.format)).map(card).join('')}
+document.querySelector('#verifyBtn').addEventListener('click',async()=>{const emails=parseEmails(input.value);if(!emails.length){feedback.textContent='Masukkan daftar email terlebih dahulu.';summary.classList.remove('hidden');return}summary.classList.remove('hidden');feedback.textContent='Memeriksa format dan domain...';const seen=new Set();rows=emails.map(email=>{const key=email.toLowerCase(),format=formatValid(email),duplicate=seen.has(key);seen.add(key);return {email,format,duplicate,domain:format?'Memeriksa…':'Unknown',domainDetail:''}});document.querySelector('#total').textContent=emails.length+' email';document.querySelector('#formatCount').textContent=rows.filter(r=>r.format).length;document.querySelector('#domainCount').textContent='…';document.querySelector('#unknownCount').textContent=rows.length;render();const d=await checkDomain('gmail.com');for(const r of rows){if(r.format){r.domain=d.status;r.domainDetail=d.detail}else{r.domain='Unknown';r.domainDetail='Format tidak valid'}}render();document.querySelector('#domainCount').textContent=rows.filter(r=>r.domain==='Valid').length;document.querySelector('#unknownCount').textContent=rows.filter(r=>r.domain==='Unknown').length;feedback.textContent='Selesai. Mailbox ditampilkan sebagai Unknown karena status akun Gmail tidak dapat dipastikan lewat API publik.'});
+document.querySelector('#clearBtn').addEventListener('click',()=>{input.value='';inputCount.textContent='0 email';summary.classList.add('hidden');rows=[];feedback.textContent=''});document.querySelector('#filter').addEventListener('change',render);
+async function copy(text){try{await navigator.clipboard.writeText(text);feedback.textContent='Berhasil disalin.'}catch{feedback.textContent='Salin otomatis tidak tersedia di browser ini.'}}
+document.querySelector('#copyValidBtn').addEventListener('click',()=>copy([...new Set(rows.filter(r=>r.format).map(r=>r.email))].join('\n')));document.querySelector('#copyAllBtn').addEventListener('click',()=>copy(rows.map(r=>`${r.email} | Format: ${r.format?'Valid':'Invalid'} | Domain: ${r.domain} | Mailbox: Unknown`).join('\n')));
