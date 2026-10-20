@@ -72,11 +72,7 @@ export default function Home() {
           <span style={styles.counter}>
             {emailCount} / {MAX_EMAILS} email
           </span>
-          <button
-            style={styles.button}
-            onClick={handleVerify}
-            disabled={loading}
-          >
+          <button style={styles.button} onClick={handleVerify} disabled={loading}>
             {loading ? "Memverifikasi..." : "Verify"}
           </button>
         </div>
@@ -121,62 +117,16 @@ export default function Home() {
 }
 
 const styles = {
-  main: {
-    minHeight: "100vh",
-    background: "#f8fafc",
-    padding: "2rem 1rem",
-    fontFamily: "system-ui, sans-serif",
-  },
-  container: {
-    maxWidth: 720,
-    margin: "0 auto",
-    background: "#fff",
-    borderRadius: 12,
-    padding: "2rem",
-    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-  },
+  main: { minHeight: "100vh", background: "#f8fafc", padding: "2rem 1rem", fontFamily: "system-ui, sans-serif" },
+  container: { maxWidth: 720, margin: "0 auto", background: "#fff", borderRadius: 12, padding: "2rem", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" },
   title: { fontSize: "1.75rem", marginBottom: "0.25rem" },
   subtitle: { color: "#64748b", marginBottom: "1rem" },
-  textarea: {
-    width: "100%",
-    padding: "0.75rem",
-    border: "1px solid #cbd5e1",
-    borderRadius: 8,
-    fontSize: "0.95rem",
-    fontFamily: "inherit",
-    resize: "vertical",
-    boxSizing: "border-box",
-  },
-  row: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: "0.75rem",
-  },
+  textarea: { width: "100%", padding: "0.75rem", border: "1px solid #cbd5e1", borderRadius: 8, fontSize: "0.95rem", fontFamily: "inherit", resize: "vertical", boxSizing: "border-box" },
+  row: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.75rem" },
   counter: { color: "#64748b", fontSize: "0.875rem" },
-  button: {
-    background: "#2563eb",
-    color: "#fff",
-    border: "none",
-    borderRadius: 8,
-    padding: "0.6rem 1.25rem",
-    fontSize: "0.95rem",
-    cursor: "pointer",
-  },
+  button: { background: "#2563eb", color: "#fff", border: "none", borderRadius: 8, padding: "0.6rem 1.25rem", fontSize: "0.95rem", cursor: "pointer" },
   error: { color: "#dc2626", marginTop: "0.75rem" },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    marginTop: "1.5rem",
-    fontSize: "0.9rem",
-  },
-  th: {
-    textAlign: "left",
-    borderBottom: "2px solid #e2e8f0",
-    padding: "0.5rem",
-  },
-  td: {
-    borderBottom: "1px solid #e2e8f0",
-    padding: "0.5rem",
-  },
+  table: { width: "100%", borderCollapse: "collapse", marginTop: "1.5rem", fontSize: "0.9rem" },
+  th: { textAlign: "left", borderBottom: "2px solid #e2e8f0", padding: "0.5rem" },
+  td: { borderBottom: "1px solid #e2e8f0", padding: "0.5rem" },
 };
